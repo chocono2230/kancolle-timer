@@ -14,7 +14,7 @@ const ShowTimer = (props: Props) => {
     if (!time) {
       return '--:--';
     }
-    return time.substring(0, 5);
+    return time;
   };
 
   const createButton = () => {

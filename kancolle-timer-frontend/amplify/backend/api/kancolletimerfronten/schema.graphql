@@ -7,7 +7,7 @@ input AMPLIFY {
 
 type Timer @model {
   id: ID!
-  time: AWSTime!
+  time: String!
   isTemped: Boolean!
   order: Int!
   endTime: AWSDateTime

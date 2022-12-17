@@ -46,9 +46,8 @@ const UserEdit = ({ timerListSize }: Props) => {
     // endTimeの設定を、data.isStartによって定義する
     // #3では対応しない
     delete data.isStart;
-    const awsTime = data.time + ':00.000';
     const endTime = null;
-    const arg: CreateTimerInput = { ...data, time: awsTime, order: timerListSize, endTime };
+    const arg: CreateTimerInput = { ...data, order: timerListSize, endTime };
     try {
       await createTimer(arg);
     } catch (err) {

@@ -1,9 +1,9 @@
-import EditTimer from '../components/Timer/EditTimer';
+import Timer from '../components/Timer';
 
 const Top = () => {
   return (
     <>
-      <EditTimer timerListSize={1} />
+      <Timer />
     </>
   );
 };

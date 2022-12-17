@@ -5,7 +5,7 @@ import { TextField, Button, Box, FormGroup, FormControlLabel, Checkbox } from '@
 
 import { CreateTimerInput } from '../../API';
 
-import useTimer from '../../hook/Timer.hook';
+import useTimer from '../../hook/timer.hook';
 import registerMui from '../../utils/registerMui';
 
 type OmitFormInputTypes = 'id' | 'order' | 'endTime';

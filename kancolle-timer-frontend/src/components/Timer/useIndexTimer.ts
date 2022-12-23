@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { Timer } from '../../API';
 import { API, graphqlOperation } from 'aws-amplify';
@@ -8,7 +8,7 @@ import { onCreateTimer, onDeleteTimer, onUpdateTimer } from '../../graphql/subsc
 
 const useTimerIndex = () => {
   const [timers, setTimers] = useState<Timer[]>([]);
-  const { listTimers } = useTimers();
+  const { listTimers, updateTimer } = useTimers();
 
   const callSetTimer = async () => {
     try {
@@ -26,6 +26,22 @@ const useTimerIndex = () => {
       console.error(e);
     }
   };
+
+  const organizeAfterDelete = useCallback(
+    async (deletedOrder: number) => {
+      const arr = timers.filter((t) => t.order > deletedOrder);
+      try {
+        const promises = arr.map(async (t) => {
+          const nextTimer = { id: t.id, order: t.order - 1 };
+          await updateTimer(nextTimer);
+        });
+        await Promise.all(promises);
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [timers, updateTimer]
+  );
 
   useEffect(() => {
     void callSetTimer();
@@ -76,7 +92,7 @@ const useTimerIndex = () => {
     })();
   }, []);
 
-  return { timers };
+  return { timers, organizeAfterDelete };
 };
 
 export default useTimerIndex;

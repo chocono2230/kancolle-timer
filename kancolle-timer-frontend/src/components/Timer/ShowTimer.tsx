@@ -7,10 +7,11 @@ import GenericDialog from '../GenericDialog';
 
 type Props = {
   timer: Timer;
+  organizeAfterDelete: (deletedOrder: number) => Promise<void>;
 };
 
 const ShowTimer = (props: Props) => {
-  const { timer } = props;
+  const { timer, organizeAfterDelete } = props;
   const { callStartTimer, callStopTimer, callDeleteTimer } = useShowTimer();
   const [open, setOpen] = useState<boolean>(false);
 
@@ -42,7 +43,10 @@ const ShowTimer = (props: Props) => {
   };
 
   const deleteTimer = () => {
+    const deletedOrder = timer.order;
+    void organizeAfterDelete(deletedOrder);
     void callDeleteTimer(timer);
+    setOpen(false);
   };
 
   const createButton = () => {

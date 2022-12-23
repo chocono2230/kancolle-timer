@@ -7,6 +7,7 @@ import { CreateTimerInput } from '../../API';
 
 import useTimer from '../../hook/timer.hook';
 import registerMui from '../../utils/registerMui';
+import { date2AWSDateTime, addTime } from '../../utils/timeUtils';
 
 type OmitFormInputTypes = 'id' | 'order' | 'endTime';
 type FormInputs = Omit<CreateTimerInput, OmitFormInputTypes> & { isStart?: boolean };
@@ -45,8 +46,8 @@ const UserEdit = ({ timerListSize }: Props) => {
     }
     // endTimeの設定を、data.isStartによって定義する
     // #3では対応しない
+    const endTime = data.isStart ? date2AWSDateTime(addTime(new Date(), data.time)) : null;
     delete data.isStart;
-    const endTime = null;
     const arg: CreateTimerInput = { ...data, order: timerListSize, endTime };
     try {
       await createTimer(arg);

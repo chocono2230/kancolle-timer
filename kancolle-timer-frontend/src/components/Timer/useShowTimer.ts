@@ -18,22 +18,28 @@ const useShowTimer = () => {
     }
   };
 
-  const callStopTimer = useCallback(async (timer: Timer) => {
-    try {
-      const nextTimer = { id: timer.id, endTime: null };
-      await updateTimer(nextTimer);
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
+  const callStopTimer = useCallback(
+    async (timer: Timer) => {
+      try {
+        const nextTimer = { id: timer.id, endTime: null };
+        await updateTimer(nextTimer);
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [updateTimer]
+  );
 
-  const callDeleteTimer = useCallback(async (timer: Timer) => {
-    try {
-      await deleteTimer(timer.id);
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
+  const callDeleteTimer = useCallback(
+    async (timer: Timer) => {
+      try {
+        await deleteTimer(timer.id);
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [deleteTimer]
+  );
 
   return { callStartTimer, callStopTimer, callDeleteTimer };
 };

@@ -10,7 +10,7 @@ const useTimerIndex = () => {
   const [timers, setTimers] = useState<Timer[]>([]);
   const { listTimers, updateTimer } = useTimers();
 
-  const callSetTimer = async () => {
+  const callSetTimer = useCallback(async () => {
     try {
       const r = await listTimers();
       if (r) {
@@ -25,7 +25,7 @@ const useTimerIndex = () => {
     } catch (e) {
       console.error(e);
     }
-  };
+  }, [listTimers]);
 
   const organizeAfterDelete = useCallback(
     async (deletedOrder: number) => {
@@ -45,7 +45,7 @@ const useTimerIndex = () => {
 
   useEffect(() => {
     void callSetTimer();
-  }, []);
+  }, [callSetTimer]);
 
   useEffect(() => {
     (() => {
@@ -90,7 +90,7 @@ const useTimerIndex = () => {
         });
       }
     })();
-  }, []);
+  }, [callSetTimer]);
 
   return { timers, organizeAfterDelete };
 };

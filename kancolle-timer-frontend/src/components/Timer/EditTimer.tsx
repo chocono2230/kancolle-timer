@@ -45,7 +45,6 @@ const UserEdit = ({ timerListSize }: Props) => {
       return;
     }
     // endTimeの設定を、data.isStartによって定義する
-    // #3では対応しない
     const endTime = data.isStart ? date2AWSDateTime(addTime(new Date(), data.time)) : null;
     delete data.isStart;
     const arg: CreateTimerInput = { ...data, order: timerListSize, endTime };
@@ -60,8 +59,9 @@ const UserEdit = ({ timerListSize }: Props) => {
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ display: 'flex', flexFlow: 'column', maxWidth: '500px' }}>
-          <Box sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'flex', m: 1 }}>
             <TextField
+              sx={{ mr: 1 }}
               label='Name'
               type='string'
               InputLabelProps={{ shrink: true }}
@@ -72,6 +72,7 @@ const UserEdit = ({ timerListSize }: Props) => {
               )}
             />
             <TextField
+              sx={{ mr: 1, ml: 1 }}
               label='Time'
               type='string'
               InputLabelProps={{ shrink: true }}

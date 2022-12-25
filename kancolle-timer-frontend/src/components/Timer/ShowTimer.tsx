@@ -17,21 +17,30 @@ const ShowTimer = (props: Props) => {
 
   const formatTime = (time: string | null | undefined) => {
     if (!time) {
-      return '--:--';
+      return '--時間--分';
     }
-    return time;
+    const hh = time.split(':')[0];
+    const mm = time.split(':')[1];
+    return `${hh}時間${mm}分`;
   };
 
   const formatEndTime = (endTime: string | null | undefined) => {
     if (!endTime) {
-      return '--日 --:--';
+      return '--日 --時--分';
     }
     const yyyymmdd = endTime.split('T')[0];
     const day = yyyymmdd.split('-')[2];
     const hhmmss = endTime.split('T')[1];
     const hh = hhmmss.split(':')[0];
     const mm = hhmmss.split(':')[1];
-    return `${day}日 ${hh}:${mm}`;
+    return `${day}日 ${hh}時${mm}分`;
+  };
+
+  const formatTimeName = (name: string) => {
+    if (name.length <= 10) {
+      return name;
+    }
+    return name.slice(0, 10) + '...';
   };
 
   const startTimer = () => {
@@ -80,8 +89,8 @@ const ShowTimer = (props: Props) => {
     );
   };
 
-  const deleteMsg = (timer.name ? timer.name : timer.time + 'のタイマー') + ' を削除しますか？';
-  const timerMsg = (timer.isTemped ? 'T: ' : '') + (timer.name ? timer.name : timer.time);
+  const deleteMsg = (timer.name ? timer.name : formatTime(timer.time) + 'のタイマー') + ' を削除しますか？';
+  const timerMsg = formatTimeName((timer.isTemped ? 'T: ' : '') + (timer.name ? timer.name : formatTime(timer.time)));
 
   return (
     <>

@@ -1,5 +1,11 @@
+import Timer from '../components/Timer';
+
 const Top = () => {
-  return <>トップ</>;
+  return (
+    <>
+      <Timer />
+    </>
+  );
 };
 
 export default Top;

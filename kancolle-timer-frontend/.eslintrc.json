@@ -3,7 +3,8 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "prettier"
+    "prettier",
+    "plugin:react-hooks/recommended"
   ],
   "plugins": ["@typescript-eslint"],
   "parser": "@typescript-eslint/parser",

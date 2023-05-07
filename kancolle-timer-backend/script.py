@@ -9,6 +9,8 @@ ENDPOINT = os.environ["ENDPOINT"]
 API_KEY = os.environ["API_KEY"]
 # Slack送信用sqsのURL
 SQSURL = os.environ["SQSURL"]
+# SlackのURL
+SLACK_URL = os.environ["SLACK_URL"]
 
 
 def send(text):

@@ -9,6 +9,11 @@ terraform {
       source  = "hashicorp/aws"
       version = "~>4.66.0"
     }
+
+    archive = {
+      source  = "hashicorp/archive"
+      version = "~>2.3.0"
+    }
   }
 }
 
@@ -21,4 +26,8 @@ provider "aws" {
       env     = var.env
     }
   }
+}
+
+locals {
+  identifier = "${var.env}-${var.project}"
 }

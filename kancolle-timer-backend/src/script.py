@@ -8,13 +8,15 @@ ENDPOINT = os.environ["ENDPOINT"]
 # AppSyncのAPI KEY
 API_KEY = os.environ["API_KEY"]
 # Slack送信用sqsのURL
-SQSURL = os.environ["SQSURL"]
+SQS_URL = os.environ["SQS_URL"]
+# SlackのURL
+SLACK_URL = os.environ["SLACK_URL"]
 
 
 def send(text):
     client = boto3.client("sqs")
-    messageBody = json.dumps({"text": text})
-    return client.send_message(QueueUrl=SQSURL, MessageBody=messageBody)
+    messageBody = json.dumps({"text": text, "url": SLACK_URL})
+    return client.send_message(QueueUrl=SQS_URL, MessageBody=messageBody)
 
 
 def create_client():
@@ -128,7 +130,7 @@ def main():
     timers = get_timers()
     timers.sort(key=lambda x: x["order"])
     prev_timers = copy.deepcopy(timers)
-    messages = ["【KancolleTimer】"]
+    messages = []
 
     for t in timers:
         if t["endTime"] is None:
@@ -151,7 +153,7 @@ def main():
             continue
         change_timer(timers[i]["id"], timers[i]["endTime"], new_index)
 
-    if len(messages) != 1:
+    if len(messages) != 0:
         send("\n".join(messages))
 
 

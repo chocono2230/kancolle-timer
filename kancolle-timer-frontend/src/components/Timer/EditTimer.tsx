@@ -17,7 +17,7 @@ type Props = {
 };
 
 const UserEdit = ({ timerListSize }: Props) => {
-  const { register, handleSubmit, control } = useForm<FormInputs>({
+  const { register, handleSubmit, control, reset } = useForm<FormInputs>({
     defaultValues: {
       time: '',
       isTemped: true,
@@ -50,6 +50,7 @@ const UserEdit = ({ timerListSize }: Props) => {
     const arg: CreateTimerInput = { ...data, order: timerListSize, endTime };
     try {
       await createTimer(arg);
+      reset();
     } catch (err) {
       console.error(err);
     }

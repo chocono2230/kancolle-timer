@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Button, IconButton } from '@mui/material';
+import { Box, Button, IconButton, ListItem, Paper } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Timer } from '../../API';
 import useShowTimer from './useShowTimer';
@@ -94,27 +94,31 @@ const ShowTimer = (props: Props) => {
 
   return (
     <>
-      <Box sx={{ display: 'flex', m: 1 }}>
-        <Box sx={{ flex: 1 }}>{timerMsg}</Box>
-        <Box sx={{ flex: 1 }}>{formatTime(timer.time)}</Box>
-        <Box sx={{ flex: 1 }}>{formatEndTime(timer.endTime)}</Box>
-        {createButton()}
-        <IconButton
-          sx={{ ml: 1 }}
-          onClick={() => {
-            setOpen(true);
-          }}
-        >
-          <DeleteIcon />
-        </IconButton>
-        <GenericDialog
-          msg={deleteMsg}
-          isOpen={open}
-          doOk={deleteTimer}
-          doCancel={() => setOpen(false)}
-          irreversibleFlag
-        />
-      </Box>
+      <ListItem sx={{ p: 0.5 }}>
+        <Paper elevation={3} sx={{ width: '100%' }}>
+          <Box sx={{ display: 'flex', m: 1 }}>
+            <Box sx={{ flex: 1 }}>{timerMsg}</Box>
+            <Box sx={{ flex: 1 }}>{formatTime(timer.time)}</Box>
+            <Box sx={{ flex: 1 }}>{formatEndTime(timer.endTime)}</Box>
+            {createButton()}
+            <IconButton
+              sx={{ ml: 1 }}
+              onClick={() => {
+                setOpen(true);
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+            <GenericDialog
+              msg={deleteMsg}
+              isOpen={open}
+              doOk={deleteTimer}
+              doCancel={() => setOpen(false)}
+              irreversibleFlag
+            />
+          </Box>
+        </Paper>
+      </ListItem>
     </>
   );
 };

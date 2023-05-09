@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { Box, Button, IconButton } from '@mui/material';
+import { Box, Button, IconButton, ListItem, Paper } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
 import { Timer } from '../../API';
 import useShowTimer from './useShowTimer';
 import GenericDialog from '../GenericDialog';
@@ -14,6 +17,7 @@ const ShowTimer = (props: Props) => {
   const { timer, organizeAfterDelete } = props;
   const { callStartTimer, callStopTimer, callDeleteTimer } = useShowTimer();
   const [open, setOpen] = useState<boolean>(false);
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: timer.id });
 
   const formatTime = (time: string | null | undefined) => {
     if (!time) {
@@ -92,29 +96,43 @@ const ShowTimer = (props: Props) => {
   const deleteMsg = (timer.name ? timer.name : formatTime(timer.time) + 'のタイマー') + ' を削除しますか？';
   const timerMsg = formatTimeName((timer.isTemped ? 'T: ' : '') + (timer.name ? timer.name : formatTime(timer.time)));
 
+  const style = {
+    width: '100%',
+    cursor: 'move',
+    listStyle: 'none',
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
     <>
-      <Box sx={{ display: 'flex', m: 1 }}>
-        <Box sx={{ flex: 1 }}>{timerMsg}</Box>
-        <Box sx={{ flex: 1 }}>{formatTime(timer.time)}</Box>
-        <Box sx={{ flex: 1 }}>{formatEndTime(timer.endTime)}</Box>
-        {createButton()}
-        <IconButton
-          sx={{ ml: 1 }}
-          onClick={() => {
-            setOpen(true);
-          }}
-        >
-          <DeleteIcon />
-        </IconButton>
-        <GenericDialog
-          msg={deleteMsg}
-          isOpen={open}
-          doOk={deleteTimer}
-          doCancel={() => setOpen(false)}
-          irreversibleFlag
-        />
-      </Box>
+      <ListItem>
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+          <Paper elevation={3} sx={{ width: '100%', p: 0.5 }}>
+            <Box sx={{ display: 'flex', m: 1 }}>
+              <Box sx={{ flex: 1 }}>{timerMsg}</Box>
+              <Box sx={{ flex: 1 }}>{formatTime(timer.time)}</Box>
+              <Box sx={{ flex: 1 }}>{formatEndTime(timer.endTime)}</Box>
+              {createButton()}
+              <IconButton
+                sx={{ ml: 1 }}
+                onClick={() => {
+                  setOpen(true);
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+              <GenericDialog
+                msg={deleteMsg}
+                isOpen={open}
+                doOk={deleteTimer}
+                doCancel={() => setOpen(false)}
+                irreversibleFlag
+              />
+            </Box>
+          </Paper>
+        </div>
+      </ListItem>
     </>
   );
 };

@@ -93,6 +93,32 @@ const useTimerIndex = () => {
     [timersArray, updateTimer]
   );
 
+  const changeTimerOrder = useCallback(
+    (oldIndex: number, newIndex: number) => {
+      const step = oldIndex < newIndex ? 1 : -1;
+      const promises: ReturnType<typeof updateTimer>[] = [];
+      setTimers((prev) => {
+        // ローカルでの並び替え
+        const newMap = new Map(prev);
+        for (let i = oldIndex; i !== newIndex; i += step) {
+          const nextIndex = i + step;
+          newMap.set(timersArray[nextIndex].id, { ...timersArray[nextIndex], order: timersArray[i].order });
+        }
+        newMap.set(timersArray[oldIndex].id, { ...timersArray[oldIndex], order: timersArray[newIndex].order });
+        makeTimersArray(newMap);
+        // 並び替えたものを更新するプロミスを作成
+        for (let i = oldIndex; i !== newIndex + step; i += step) {
+          const t = newMap.get(timersArray[i].id);
+          if (t) promises.push(updateTimer({ id: t.id, order: t.order }));
+        }
+        return newMap;
+      });
+      // サーバーに更新を送信
+      void Promise.all(promises);
+    },
+    [timersArray, updateTimer]
+  );
+
   useEffect(() => {
     void (async () => {
       try {
@@ -192,7 +218,7 @@ const useTimerIndex = () => {
     })();
   }, []);
 
-  return { timersArray, organizeAfterDelete };
+  return { timersArray, organizeAfterDelete, changeTimerOrder };
 };
 
 export default useTimerIndex;

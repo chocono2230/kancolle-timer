@@ -140,7 +140,10 @@ def main():
             if t["isTemped"]:
                 t["order"] = -1
             t["endTime"] = None
-            messages.append(f"{t['name']}のタイマーが終了しました。")
+            name = t["name"]
+            if name is None or name == "":
+                name = t["time"]
+            messages.append(f"{name}のタイマーが終了しました。")
 
     new_index = -1
     for i in range(len(timers)):

@@ -6,7 +6,7 @@ import { TextField, Button, Box, FormGroup, FormControlLabel, Checkbox } from '@
 import { CreateTimerInput } from '../../API';
 
 import useTimer from '../../hook/timer.hook';
-import registerMui from '../../utils/registerMui';
+import { registerMui } from '../../utils/inputUtils';
 import { date2AWSDateTime, addTime } from '../../utils/timeUtils';
 
 type OmitFormInputTypes = 'id' | 'order' | 'endTime';

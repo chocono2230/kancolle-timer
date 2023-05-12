@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import { useForm, Controller } from 'react-hook-form';
 
 import { TextField, Button, Box, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
@@ -6,7 +5,7 @@ import { TextField, Button, Box, FormGroup, FormControlLabel, Checkbox } from '@
 import { CreateTimerInput } from '../../API';
 
 import useTimer from '../../hook/timer.hook';
-import registerMui from '../../utils/registerMui';
+import { registerMui, onPromise } from '../../utils/inputUtils';
 import { date2AWSDateTime, addTime } from '../../utils/timeUtils';
 
 type OmitFormInputTypes = 'id' | 'order' | 'endTime';
@@ -58,7 +57,7 @@ const UserEdit = ({ timerListSize }: Props) => {
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={onPromise(handleSubmit(onSubmit))}>
         <Box sx={{ display: 'flex', flexFlow: 'column', maxWidth: '500px' }}>
           <Box sx={{ display: 'flex', m: 1 }}>
             <TextField

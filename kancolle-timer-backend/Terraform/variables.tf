@@ -23,4 +23,11 @@ variable "sqs_url" {
 variable "sqs_name" {
   type = string
 }
+variable "sns_topic_name" {
+  type = string
+}
+variable "graphql_api_id" {
+  type      = string
+  sensitive = true
+}
 

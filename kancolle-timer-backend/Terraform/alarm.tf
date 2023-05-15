@@ -1,3 +1,7 @@
+data "aws_sns_topic" "this" {
+  name = var.sns_topic_name
+}
+
 resource "aws_cloudwatch_metric_alarm" "this" {
   alarm_name          = "${local.identifier}-appsync-alarm"
   comparison_operator = "GreaterThanThreshold"
@@ -8,7 +12,7 @@ resource "aws_cloudwatch_metric_alarm" "this" {
   statistic           = "SampleCount"
   threshold           = 100
   alarm_actions = [
-    "damy",
+    data.aws_sns_topic.this.arn,
   ]
   alarm_description   = <<-EOT
         アクセスカウントのアラート
@@ -17,6 +21,6 @@ resource "aws_cloudwatch_metric_alarm" "this" {
     EOT
   datapoints_to_alarm = 1
   dimensions = {
-    "GraphQLAPIId" = "damy"
+    "GraphQLAPIId" = var.graphql_api_id
   }
 }

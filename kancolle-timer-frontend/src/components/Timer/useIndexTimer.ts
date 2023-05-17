@@ -2,10 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { Timer, OnCreateTimerSubscription, OnUpdateTimerSubscription, OnDeleteTimerSubscription } from '../../API';
 import { API, graphqlOperation } from 'aws-amplify';
+import { GraphQLSubscription } from '@aws-amplify/api';
 import useTimers from '../../hook/timer.hook';
 // amplifyで自動生成されたサブスクリプションのクエリをimport
 import { onCreateTimer, onDeleteTimer, onUpdateTimer } from '../../graphql/subscriptions';
-import { hasProperty } from '../../utils/typeUtils';
 
 type onCreateTimer = {
   value: {
@@ -23,43 +23,6 @@ type onDeleteTimer = {
   value: {
     data: OnDeleteTimerSubscription;
   };
-};
-
-const isOnCreateTimer = (t: unknown): t is onCreateTimer => {
-  if (hasProperty(t, 'value') && hasProperty(t.value, 'data') && hasProperty(t.value.data, 'onCreateTimer')) {
-    return isTimer(t.value.data.onCreateTimer);
-  }
-  return false;
-};
-
-const isOnUpdateTimer = (t: unknown): t is onUpdateTimer => {
-  if (hasProperty(t, 'value') && hasProperty(t.value, 'data') && hasProperty(t.value.data, 'onUpdateTimer')) {
-    return isTimer(t.value.data.onUpdateTimer);
-  }
-  return false;
-};
-
-const isOnDeleteTimer = (t: unknown): t is onDeleteTimer => {
-  if (hasProperty(t, 'value') && hasProperty(t.value, 'data') && hasProperty(t.value.data, 'onDeleteTimer')) {
-    return isTimer(t.value.data.onDeleteTimer);
-  }
-  return false;
-};
-
-const isTimer = (t: unknown): t is Timer => {
-  if (hasProperty(t, 'id', 'time', 'isTemped', 'order', 'endTime', 'name', 'createdAt', 'updatedAt')) {
-    return (
-      typeof t.id === 'string' &&
-      typeof t.time === 'string' &&
-      typeof t.isTemped === 'boolean' &&
-      typeof t.order === 'number' &&
-      typeof t.createdAt === 'string' &&
-      typeof t.updatedAt === 'string' &&
-      (typeof t.endTime === 'string' || t.endTime === null) &&
-      (typeof t.name === 'string' || t.name === null)
-    );
-  }
-  return false;
 };
 
 const useTimerIndex = () => {
@@ -140,81 +103,87 @@ const useTimerIndex = () => {
 
   useEffect(() => {
     (() => {
-      const client = API.graphql(graphqlOperation(onCreateTimer));
-      if ('subscribe' in client) {
-        client.subscribe({
-          next: (data) => {
-            if (isOnCreateTimer(data)) {
-              const { onCreateTimer: timer } = data.value.data;
-              setTimers((prev) => {
-                const newMap = new Map(prev);
-                if (timer) {
-                  newMap.set(timer.id, timer);
-                }
-                makeTimersArray(newMap);
-                return newMap;
-              });
-            } else {
-              console.error('data is not onCreateTimer', data);
-            }
-          },
-          error: (error) => {
-            console.error(error);
-          },
-        });
-      }
+      const sub = API.graphql<GraphQLSubscription<OnCreateTimerSubscription>>(
+        graphqlOperation(onCreateTimer)
+      ).subscribe({
+        next: (data) => {
+          if (data.value.data) {
+            const { onCreateTimer: timer } = data.value.data;
+            setTimers((prev) => {
+              const newMap = new Map(prev);
+              if (timer) {
+                newMap.set(timer.id, timer);
+              }
+              makeTimersArray(newMap);
+              return newMap;
+            });
+          } else {
+            console.error('value.date is undefined', data);
+          }
+        },
+        error: (error) => {
+          console.error(error);
+        },
+      });
+      return () => {
+        sub.unsubscribe();
+      };
     })();
 
     (() => {
-      const client = API.graphql(graphqlOperation(onUpdateTimer));
-      if ('subscribe' in client) {
-        client.subscribe({
-          next: (data) => {
-            if (isOnUpdateTimer(data)) {
-              const { onUpdateTimer: timer } = data.value.data;
-              setTimers((prev) => {
-                const newMap = new Map(prev);
-                if (timer) {
-                  newMap.set(timer.id, timer);
-                }
-                makeTimersArray(newMap);
-                return newMap;
-              });
-            } else {
-              console.error('data is not onUpdate', data);
-            }
-          },
-          error: (error) => {
-            console.error(error);
-          },
-        });
-      }
+      const sub = API.graphql<GraphQLSubscription<OnUpdateTimerSubscription>>(
+        graphqlOperation(onUpdateTimer)
+      ).subscribe({
+        next: (data) => {
+          if (data.value.data) {
+            const { onUpdateTimer: timer } = data.value.data;
+            setTimers((prev) => {
+              const newMap = new Map(prev);
+              if (timer) {
+                newMap.set(timer.id, timer);
+              }
+              makeTimersArray(newMap);
+              return newMap;
+            });
+          } else {
+            console.error('value.date is undefined', data);
+          }
+        },
+        error: (error) => {
+          console.error(error);
+        },
+      });
+      return () => {
+        sub.unsubscribe();
+      };
     })();
 
     (() => {
-      const client = API.graphql(graphqlOperation(onDeleteTimer));
-      if ('subscribe' in client) {
-        client.subscribe({
-          next: (data) => {
-            if (isOnDeleteTimer(data)) {
-              const { onDeleteTimer: timer } = data.value.data;
-              setTimers((prev) => {
-                const newMap = new Map(prev);
-                if (timer) {
-                  newMap.delete(timer.id);
-                }
-                makeTimersArray(newMap);
-                return newMap;
-              });
-            } else {
-              console.error('data is not onDelete', data);
-            }
-          },
-          error: (error) => {
-            console.error(error);
-          },
-        });
-      }
+      const sub = API.graphql<GraphQLSubscription<OnDeleteTimerSubscription>>(
+        graphqlOperation(onDeleteTimer)
+      ).subscribe({
+        next: (data) => {
+          if (data.value.data) {
+            const { onDeleteTimer: timer } = data.value.data;
+            setTimers((prev) => {
+              const newMap = new Map(prev);
+              if (timer) {
+                newMap.delete(timer.id);
+              }
+              makeTimersArray(newMap);
+              return newMap;
+            });
+          } else {
+            console.error('value.date is undefined', data);
+          }
+        },
+        error: (error) => {
+          console.error(error);
+        },
+      });
+      return () => {
+        sub.unsubscribe();
+      };
     })();
   }, []);
 

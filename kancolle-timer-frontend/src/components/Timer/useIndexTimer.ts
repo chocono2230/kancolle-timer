@@ -7,24 +7,6 @@ import useTimers from '../../hook/timer.hook';
 // amplifyで自動生成されたサブスクリプションのクエリをimport
 import { onCreateTimer, onDeleteTimer, onUpdateTimer } from '../../graphql/subscriptions';
 
-type onCreateTimer = {
-  value: {
-    data: OnCreateTimerSubscription;
-  };
-};
-
-type onUpdateTimer = {
-  value: {
-    data: OnUpdateTimerSubscription;
-  };
-};
-
-type onDeleteTimer = {
-  value: {
-    data: OnDeleteTimerSubscription;
-  };
-};
-
 const useTimerIndex = () => {
   const [timersArray, setTimersArray] = useState<Timer[]>([]);
   const [, setTimers] = useState<Map<string, Timer>>(new Map());

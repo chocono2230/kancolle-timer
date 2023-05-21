@@ -1,15 +1,18 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 import { Timer, OnCreateTimerSubscription, OnUpdateTimerSubscription, OnDeleteTimerSubscription } from '../../API';
-import { API, graphqlOperation } from 'aws-amplify';
+import { API, graphqlOperation, Hub } from 'aws-amplify';
+import { CONNECTION_STATE_CHANGE, ConnectionState } from '@aws-amplify/pubsub';
 import { GraphQLSubscription } from '@aws-amplify/api';
-import useTimers from '../../hook/timer.hook';
 // amplifyで自動生成されたサブスクリプションのクエリをimport
 import { onCreateTimer, onDeleteTimer, onUpdateTimer } from '../../graphql/subscriptions';
+import useTimers from '../../hook/timer.hook';
+import { hasProperty } from '../../utils/typeUtils';
 
 const useTimerIndex = () => {
   const [timersArray, setTimersArray] = useState<Timer[]>([]);
   const [, setTimers] = useState<Map<string, Timer>>(new Map());
+  const prevRequestTime = useRef<number>(0);
   const { listTimers, updateTimer } = useTimers();
 
   const makeTimersArray = (timers: Map<string, Timer>) => {
@@ -65,25 +68,34 @@ const useTimerIndex = () => {
   );
 
   useEffect(() => {
-    void (async () => {
-      try {
-        const r = await listTimers();
-        if (r) {
-          const arr = r.filter((t) => t !== null) as Timer[];
-          const timersMap = new Map<string, Timer>();
-          for (const t of arr) {
-            timersMap.set(t.id, t);
+    const listenStop = Hub.listen('api', (inputdata) => {
+      const { payload } = inputdata;
+      if (payload.event !== CONNECTION_STATE_CHANGE) return;
+      const data = payload.data as unknown;
+      if (!hasProperty(data, 'connectionState') || typeof data.connectionState !== 'string') return;
+      if (data.connectionState !== ConnectionState.Connected) return;
+      const now = Date.now() / 1000;
+      if (now - prevRequestTime.current <= 30) return;
+      // 以下 state === 'connected' かつ (初回 または 30秒以上前にリクエストを送っていた)場合
+      void (async () => {
+        try {
+          const r = await listTimers();
+          if (r) {
+            const arr = r.filter((t) => t !== null) as Timer[];
+            const timersMap = new Map<string, Timer>();
+            for (const t of arr) {
+              timersMap.set(t.id, t);
+            }
+            setTimers(timersMap);
+            makeTimersArray(timersMap);
           }
-          setTimers(timersMap);
-          makeTimersArray(timersMap);
+        } catch (e) {
+          console.error(e);
         }
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-  }, [listTimers]);
+      })();
+      prevRequestTime.current = now;
+    });
 
-  useEffect(() => {
     const subCreate = API.graphql<GraphQLSubscription<OnCreateTimerSubscription>>(
       graphqlOperation(onCreateTimer)
     ).subscribe({
@@ -154,11 +166,12 @@ const useTimerIndex = () => {
     });
 
     return () => {
+      listenStop();
       subCreate.unsubscribe();
       subUpdate.unsubscribe();
       subDelete.unsubscribe();
     };
-  }, []);
+  }, [listTimers]);
 
   return { timersArray, organizeAfterDelete, changeTimerOrder };
 };

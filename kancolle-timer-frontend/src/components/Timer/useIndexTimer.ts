@@ -41,6 +41,48 @@ const useTimerIndex = () => {
     [timersArray, updateTimer]
   );
 
+  const upwardOrder = useCallback(
+    (targetIndex: number) => {
+      if (targetIndex === 0) return;
+      const target = timersArray[targetIndex];
+      const prev = timersArray[targetIndex - 1];
+      const promises = [
+        updateTimer({ id: target.id, order: prev.order }),
+        updateTimer({ id: prev.id, order: target.order }),
+      ];
+      setTimers((pMap) => {
+        const newMap = new Map(pMap);
+        newMap.set(target.id, { ...target, order: prev.order });
+        newMap.set(prev.id, { ...prev, order: target.order });
+        makeTimersArray(newMap);
+        return newMap;
+      });
+      void Promise.all(promises);
+    },
+    [timersArray, updateTimer]
+  );
+
+  const downwardOrder = useCallback(
+    (targetIndex: number) => {
+      if (targetIndex === timersArray.length - 1) return;
+      const target = timersArray[targetIndex];
+      const next = timersArray[targetIndex + 1];
+      const promises = [
+        updateTimer({ id: target.id, order: next.order }),
+        updateTimer({ id: next.id, order: target.order }),
+      ];
+      setTimers((pMap) => {
+        const newMap = new Map(pMap);
+        newMap.set(target.id, { ...target, order: next.order });
+        newMap.set(next.id, { ...next, order: target.order });
+        makeTimersArray(newMap);
+        return newMap;
+      });
+      void Promise.all(promises);
+    },
+    [timersArray, updateTimer]
+  );
+
   const changeTimerOrder = useCallback(
     (oldIndex: number, newIndex: number) => {
       const step = oldIndex < newIndex ? 1 : -1;
@@ -173,7 +215,7 @@ const useTimerIndex = () => {
     };
   }, [listTimers]);
 
-  return { timersArray, organizeAfterDelete, changeTimerOrder };
+  return { timersArray, organizeAfterDelete, changeTimerOrder, upwardOrder, downwardOrder };
 };
 
 export default useTimerIndex;

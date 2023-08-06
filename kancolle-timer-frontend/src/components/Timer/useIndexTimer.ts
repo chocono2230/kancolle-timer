@@ -50,6 +50,13 @@ const useTimerIndex = () => {
         updateTimer({ id: target.id, order: prev.order }),
         updateTimer({ id: prev.id, order: target.order }),
       ];
+      setTimers((pMap) => {
+        const newMap = new Map(pMap);
+        newMap.set(target.id, { ...target, order: prev.order });
+        newMap.set(prev.id, { ...prev, order: target.order });
+        makeTimersArray(newMap);
+        return newMap;
+      });
       void Promise.all(promises);
     },
     [timersArray, updateTimer]
@@ -64,6 +71,13 @@ const useTimerIndex = () => {
         updateTimer({ id: target.id, order: next.order }),
         updateTimer({ id: next.id, order: target.order }),
       ];
+      setTimers((pMap) => {
+        const newMap = new Map(pMap);
+        newMap.set(target.id, { ...target, order: next.order });
+        newMap.set(next.id, { ...next, order: target.order });
+        makeTimersArray(newMap);
+        return newMap;
+      });
       void Promise.all(promises);
     },
     [timersArray, updateTimer]

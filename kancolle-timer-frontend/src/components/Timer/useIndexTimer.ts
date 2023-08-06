@@ -41,6 +41,34 @@ const useTimerIndex = () => {
     [timersArray, updateTimer]
   );
 
+  const upwardOrder = useCallback(
+    (targetIndex: number) => {
+      if (targetIndex === 0) return;
+      const target = timersArray[targetIndex];
+      const prev = timersArray[targetIndex - 1];
+      const promises = [
+        updateTimer({ id: target.id, order: prev.order }),
+        updateTimer({ id: prev.id, order: target.order }),
+      ];
+      void Promise.all(promises);
+    },
+    [timersArray, updateTimer]
+  );
+
+  const downwardOrder = useCallback(
+    (targetIndex: number) => {
+      if (targetIndex === timersArray.length - 1) return;
+      const target = timersArray[targetIndex];
+      const next = timersArray[targetIndex + 1];
+      const promises = [
+        updateTimer({ id: target.id, order: next.order }),
+        updateTimer({ id: next.id, order: target.order }),
+      ];
+      void Promise.all(promises);
+    },
+    [timersArray, updateTimer]
+  );
+
   const changeTimerOrder = useCallback(
     (oldIndex: number, newIndex: number) => {
       const step = oldIndex < newIndex ? 1 : -1;
@@ -173,7 +201,7 @@ const useTimerIndex = () => {
     };
   }, [listTimers]);
 
-  return { timersArray, organizeAfterDelete, changeTimerOrder };
+  return { timersArray, organizeAfterDelete, changeTimerOrder, upwardOrder, downwardOrder };
 };
 
 export default useTimerIndex;

@@ -21,7 +21,16 @@ const Timer = () => {
           <List>
             {timersArray &&
               timersArray.map((t) => {
-                return <ShowTimer key={t.id} timer={t} organizeAfterDelete={organizeAfterDelete} />;
+                return (
+                  <ShowTimer
+                    key={t.id}
+                    timer={t}
+                    editOrderFlag={editOrderFlag}
+                    upwardFlag={t.order !== 0}
+                    downwardFlag={t.order !== timersArray.length - 1}
+                    organizeAfterDelete={organizeAfterDelete}
+                  />
+                );
               })}
           </List>
           <Box sx={{ m: 2 }}>

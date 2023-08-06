@@ -1,15 +1,22 @@
-import { Box, Container, List } from '@mui/material';
+import { useState } from 'react';
+import { Box, Container, List, Switch, FormControlLabel } from '@mui/material';
 
 import EditTimer from './EditTimer';
 import ShowTimer from './ShowTimer';
 import useTimerIndex from './useIndexTimer';
 
 const Timer = () => {
+  const [editOrderFlag, setEditOrderFlag] = useState(false);
   const { timersArray, organizeAfterDelete } = useTimerIndex();
+
+  const handleChange = () => {
+    setEditOrderFlag(!editOrderFlag);
+  };
 
   return (
     <>
       <Container maxWidth='sm'>
+        <FormControlLabel control={<Switch checked={editOrderFlag} onChange={handleChange} />} label='順序変更モード' />
         <Box sx={{ minWidth: '450px' }}>
           <List>
             {timersArray &&

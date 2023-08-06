@@ -7,7 +7,7 @@ import useTimerIndex from './useIndexTimer';
 
 const Timer = () => {
   const [editOrderFlag, setEditOrderFlag] = useState(false);
-  const { timersArray, organizeAfterDelete } = useTimerIndex();
+  const { timersArray, organizeAfterDelete, upwardOrder, downwardOrder } = useTimerIndex();
 
   const handleChange = () => {
     setEditOrderFlag(!editOrderFlag);
@@ -28,6 +28,8 @@ const Timer = () => {
                     editOrderFlag={editOrderFlag}
                     upwardFlag={t.order !== 0}
                     downwardFlag={t.order !== timersArray.length - 1}
+                    upwardUpdate={() => upwardOrder(t.order)}
+                    downwardUpdate={() => downwardOrder(t.order)}
                     organizeAfterDelete={organizeAfterDelete}
                   />
                 );

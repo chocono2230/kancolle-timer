@@ -13,11 +13,13 @@ type Props = {
   editOrderFlag: boolean;
   upwardFlag: boolean;
   downwardFlag: boolean;
+  upwardUpdate: () => void;
+  downwardUpdate: () => void;
   organizeAfterDelete: (deletedOrder: number) => Promise<void>;
 };
 
 const ShowTimer = (props: Props) => {
-  const { timer, editOrderFlag, upwardFlag, downwardFlag, organizeAfterDelete } = props;
+  const { timer, editOrderFlag, upwardFlag, downwardFlag, upwardUpdate, downwardUpdate, organizeAfterDelete } = props;
   const { callStartTimer, callStopTimer, callDeleteTimer } = useShowTimer();
   const [open, setOpen] = useState<boolean>(false);
 
@@ -128,10 +130,10 @@ const ShowTimer = (props: Props) => {
             <Box sx={{ display: 'flex', m: 1 }}>
               <Box sx={{ flex: 1 }}>{timerMsg}</Box>
               <Box sx={{ flex: 1 }}>{formatTime(timer.time)}</Box>
-              <IconButton sx={{ ml: 1 }} disabled={!upwardFlag}>
+              <IconButton sx={{ ml: 1 }} disabled={!upwardFlag} onClick={upwardUpdate}>
                 <ArrowUpwardIcon />
               </IconButton>
-              <IconButton sx={{ ml: 1 }} disabled={!downwardFlag}>
+              <IconButton sx={{ ml: 1 }} disabled={!downwardFlag} onClick={downwardUpdate}>
                 <ArrowDownwardIcon />
               </IconButton>
             </Box>

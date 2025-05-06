@@ -1,3 +1,11 @@
 {
-  "eslint.workingDirectories": ["./kancolle-timer-frontend"]
+  "eslint.workingDirectories": ["./kancolle-timer-frontend"],
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "text": "常に日本語で応答してください。コード内のコメントも日本語で記述してください。"
+    },
+    {
+      "text": "GitHub MCP Serverでは owner:chocono2230, repo:kancolle-timer を利用します。"
+    }
+  ]
 }

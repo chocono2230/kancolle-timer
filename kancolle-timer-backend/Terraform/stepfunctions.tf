@@ -264,7 +264,7 @@ resource "aws_sfn_state_machine" "timer_state_machine" {
 // Step Functions用のCloudWatch Logsグループ
 resource "aws_cloudwatch_log_group" "step_functions_log_group" {
   name              = "/aws/states/${local.identifier}-timer-state-machine"
-  retention_in_days = 30
+  retention_in_days = 365
 }
 
 // 現在のAWSリージョン情報を取得

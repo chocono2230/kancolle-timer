@@ -77,7 +77,7 @@ resource "aws_iam_policy" "dynamodb_stream_handler_policy" {
 // DynamoDBストリームハンドラーのCloudWatch Logsグループ
 resource "aws_cloudwatch_log_group" "dynamodb_stream_handler_log_group" {
   name              = "/aws/lambda/${aws_lambda_function.dynamodb_stream_handler.function_name}"
-  retention_in_days = 30
+  retention_in_days = 365
 }
 
 // EventSourceMappingでDynamoDBストリームとLambda関数を接続

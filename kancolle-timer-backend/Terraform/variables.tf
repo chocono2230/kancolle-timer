@@ -30,4 +30,9 @@ variable "graphql_api_id" {
   type      = string
   sensitive = true
 }
+variable "dynamodb_stream_arn" {
+  type        = string
+  description = "DynamoDB Streamsのイベントソース用ARN"
+  sensitive   = true
+}
 

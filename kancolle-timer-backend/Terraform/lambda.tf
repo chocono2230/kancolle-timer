@@ -13,6 +13,7 @@ data "aws_sqs_queue" "this" {
   name = var.sqs_name
 }
 
+# 元のポーリング方式のLambda関数（移行期間中は保持）
 resource "aws_lambda_function" "this" {
   function_name = "${local.identifier}-lambda"
   handler       = "script.lambda_handler"
@@ -30,6 +31,10 @@ resource "aws_lambda_function" "this" {
       ENDPOINT  = var.endpoint
       SLACK_URL = var.slack_url
       SQS_URL   = var.sqs_url
+      # Step Functions移行フラグを追加（scriptコードでこの値を参照して処理を分岐）
+      STEP_FUNCTIONS_MIGRATION = "true"
+      # ステートマシンARNを追加
+      STATE_MACHINE_ARN = aws_sfn_state_machine.timer_state_machine.arn
     }
   }
 }
@@ -64,7 +69,33 @@ resource "aws_iam_role" "lambda" {
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
     aws_iam_policy.lambda2sqs.arn,
+    # Step Functions起動のためのポリシーを追加
+    aws_iam_policy.lambda2stepfunctions.arn
   ]
+}
+
+# Step Functions実行のためのポリシーを追加
+resource "aws_iam_policy" "lambda2stepfunctions" {
+  name = "${local.identifier}-lambda-stepfunctions-policy"
+
+  policy = <<-EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+          "Effect": "Allow",
+          "Action": [
+            "states:StartExecution",
+            "states:DescribeExecution"
+          ],
+          "Resource": [
+            "${aws_sfn_state_machine.timer_state_machine.arn}",
+            "arn:aws:states:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:execution:${local.identifier}-timer-state-machine:*"
+          ]
+      }
+    ]
+  }
+  EOF
 }
 
 resource "aws_iam_policy" "lambda2sqs" {

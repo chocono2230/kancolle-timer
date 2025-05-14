@@ -1,7 +1,7 @@
 resource "aws_cloudwatch_event_rule" "this" {
   name                = "${local.identifier}-rule"
   schedule_expression = "cron(* * * * ? *)"
-  is_enabled          = (var.env == "dev" ? true : false)
+  is_enabled          = false
 }
 
 resource "aws_cloudwatch_event_target" "this" {
